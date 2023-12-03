@@ -1,5 +1,5 @@
 import express, { Express } from "express";
-import router from "./src/routes";
+import router from "@/routes";
 import {
   internalServerError,
   notFound,
@@ -7,6 +7,7 @@ import {
   zodErrorHandler,
 } from "@/middlewares";
 import morgan from "morgan";
+
 const { PORT } = process.env;
 const app: Express = express();
 
@@ -21,5 +22,5 @@ app.use(notFound);
 app.use(internalServerError);
 
 app.listen(PORT, () => {
-  console.log("Listening on port 3000");
+  console.log(`Listening at http://localhost:${PORT}`);
 });

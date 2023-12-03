@@ -1,9 +1,6 @@
 import { Request } from "express";
-
-export interface IUser {
-  id: string;
-}
+import { JwtPayload } from "jsonwebtoken";
 
 export interface ICustomRequest extends Request {
-  user?: IUser;
+  user?: JwtPayload | string;
 }

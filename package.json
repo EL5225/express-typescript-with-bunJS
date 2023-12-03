@@ -3,9 +3,7 @@
   "module": "index.ts",
   "type": "module",
   "scripts": {
-    "dev": "bun run --watch app.ts",
-    "build": "bun build app.ts",
-    "test": "bun test app.ts"
+    "dev": "bun run --watch app.ts"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

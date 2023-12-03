@@ -1,13 +1,7 @@
 import { prisma, VSLogin, VSRegister, VSResendOTP, VSVerifyOTP } from "@/libs";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import {
-  NextFunction,
-  Request,
-  RequestHandler,
-  RequestParamHandler,
-  Response,
-} from "express";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import { NextFunction, Request, Response } from "express";
 import {
   TLoginRequest,
   TLoginResponse,
@@ -110,9 +104,13 @@ export const login = async (
 
     const decryptedPassword = await bcrypt.compare(password, user.password);
 
-    const token = jwt.sign({ id: user.id }, JWT_SECRET as string, {
-      expiresIn: "15m",
-    });
+    const token = jwt.sign(
+      { sub: user.id, name: user.name },
+      JWT_SECRET as string,
+      {
+        expiresIn: "15m",
+      }
+    );
 
     if (!decryptedPassword) {
       return res.status(400).json({
@@ -251,11 +249,11 @@ export const authenticated = async (
   next: NextFunction
 ) => {
   try {
-    const user = req.user;
+    const user = req.user as JwtPayload;
 
     const authenticatedUser = await prisma.users.findUnique({
       where: {
-        id: user?.id,
+        id: user.sub,
       },
       select: {
         id: true,
