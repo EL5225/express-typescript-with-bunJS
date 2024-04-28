@@ -1,5 +1,5 @@
+import * as bun from "bun";
 import { prisma, VSLogin, VSRegister, VSResendOTP, VSVerifyOTP } from "@/libs";
-import bcrypt from "bcryptjs";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { NextFunction, Request, Response } from "express";
 import {
@@ -48,7 +48,7 @@ export const register = async (
       });
     }
 
-    const encryptedPassword = await bcrypt.hash(password, 10);
+    const encryptedPassword = await bun.password.hash(password, "bcrypt");
 
     const user = await prisma.users.create({
       data: {
@@ -102,7 +102,10 @@ export const login = async (
       });
     }
 
-    const decryptedPassword = await bcrypt.compare(password, user.password);
+    const decryptedPassword = await bun.password.verify(
+      password,
+      user.password,"bcrypt"
+    );
 
     const token = jwt.sign(
       { sub: user.id, name: user.name },
