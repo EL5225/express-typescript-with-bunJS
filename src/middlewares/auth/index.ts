@@ -1,4 +1,3 @@
-import { prisma } from "@/libs";
 import { ICustomRequest, TGenericResponse } from "@/utils";
 import { NextFunction, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
