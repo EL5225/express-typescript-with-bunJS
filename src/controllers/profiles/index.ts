@@ -46,7 +46,7 @@ export const updateProfile = async (
 
     const profile = await prisma.profiles.update({
       where: {
-        user_id: user?.id,
+        user_id: typeof user === "string" ? user : user?.id,
       },
       data: {
         phone_number,
