@@ -1,4 +1,5 @@
 import { prisma } from "@/libs";
+import resend from "../../resend";
 
 export const generateOTP = async (user_id: string) => {
   if (!user_id) {
@@ -45,4 +46,20 @@ export const getUserByEmail = async (email: string) => {
       email,
     },
   });
+};
+
+export const sendOtp = async (otp_code: number, user_email: string) => {
+  const { data, error } = await resend.emails.send({
+    from: "Zora Company <onboarding@resend.dev>",
+    to: user_email,
+    subject: "OTP Code verification",
+    html: `<strong>This is ur OTP CODE for verification</strong> <strong>${otp_code}</strong>`,
+  });
+
+  if (error) throw new Error(error.message);
+
+  return {
+    message: "otp sent successfully",
+    data: data?.id,
+  };
 };

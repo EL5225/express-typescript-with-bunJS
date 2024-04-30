@@ -14,6 +14,7 @@ import {
   generateOTP,
   getUserByEmail,
   ICustomRequest,
+  sendOtp,
   TGenericResponse,
 } from "@/utils";
 const { JWT_SECRET } = process.env;
@@ -71,8 +72,10 @@ export const register = async (
 
     const otp = await generateOTP(user.id);
 
+    // send otp
+    const result = await sendOtp(otp.otp_code, user.email);
     res.status(201).json({
-      message: `User created successfully, Please verify your account first with OTP code ${otp.otp_code}`,
+      message: `User created successfully, Please verify your account first with OTP code ${otp.otp_code} | ${result.message}`,
     });
   } catch (error) {
     next(error);
@@ -104,7 +107,8 @@ export const login = async (
 
     const decryptedPassword = await bun.password.verify(
       password,
-      user.password,"bcrypt"
+      user.password,
+      "bcrypt"
     );
 
     const token = jwt.sign(
@@ -238,8 +242,10 @@ export const resendOtp = async (
 
     const otp = await generateOTP(user.id);
 
+    const result = await sendOtp(otp.otp_code, user.email);
+
     res.status(200).json({
-      message: `OTP code ${otp.otp_code}`,
+      message: `OTP code ${otp.otp_code} | ${result.message}`,
     });
   } catch (error) {
     next(error);

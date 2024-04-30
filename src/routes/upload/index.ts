@@ -1,9 +1,11 @@
-import { uploadImage } from "@/controllers";
+import { deleteImage, uploadImage } from "@/controllers";
+import { authenticate } from "@/middlewares";
 import upload from "@/middlewares/multer";
 import { Router } from "express";
 
-const Upload = Router();
+const imageUploader = Router();
 
-Upload.use("/", upload.single("image"), uploadImage);
+imageUploader.post("/", upload.single("image"), authenticate, uploadImage);
+imageUploader.delete("/", authenticate, deleteImage);
 
-export default Upload;
+export default imageUploader;
