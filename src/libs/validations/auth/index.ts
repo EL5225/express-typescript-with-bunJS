@@ -12,9 +12,10 @@ export const VSRegister = z.object({
     .string({ required_error: "confirm_password is required" })
     .min(6, { message: "confirm_password must be at least 6 characters long" }),
   phone_number: z
-    .string({ required_error: "phone_number is required" })
+    .string()
     .min(10, { message: "Phone number must be at least 10 characters long" })
-    .max(13, { message: "Phone number must be at most 13 characters long" }),
+    .max(13, { message: "Phone number must be at most 13 characters long" })
+    .optional(),
 });
 
 export const VSLogin = z.object({

@@ -14,7 +14,7 @@ import {
   generateOTP,
   getUserByEmail,
   ICustomRequest,
-  sendOtp,
+  sendEmail,
   TGenericResponse,
 } from "@/utils";
 const { JWT_SECRET } = process.env;
@@ -73,9 +73,9 @@ export const register = async (
     const otp = await generateOTP(user.id);
 
     // send otp
-    const result = await sendOtp(otp.otp_code, user.email);
+    await sendEmail(otp.otp_code, user.email);
     res.status(201).json({
-      message: `User created successfully, Please verify your account first with OTP code ${otp.otp_code} | ${result.message}`,
+      message: `User created successfully, Please verify your account first with OTP code ${otp.otp_code}`,
     });
   } catch (error) {
     next(error);
@@ -115,7 +115,7 @@ export const login = async (
       { sub: user.id, name: user.name },
       JWT_SECRET as string,
       {
-        expiresIn: "15m",
+        expiresIn: "30m",
       }
     );
 
@@ -242,10 +242,10 @@ export const resendOtp = async (
 
     const otp = await generateOTP(user.id);
 
-    const result = await sendOtp(otp.otp_code, user.email);
+    await sendEmail(otp.otp_code, user.email);
 
     res.status(200).json({
-      message: `OTP code ${otp.otp_code} | ${result.message}`,
+      message: `OTP code ${otp.otp_code}`,
     });
   } catch (error) {
     next(error);
