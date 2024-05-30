@@ -1,5 +1,5 @@
+import * as bun from "bun";
 import { prisma, VSLogin, VSRegister, VSResendOTP, VSVerifyOTP } from "@/libs";
-import bcrypt from "bcryptjs";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { NextFunction, Request, Response } from "express";
 import {
@@ -14,6 +14,7 @@ import {
   generateOTP,
   getUserByEmail,
   ICustomRequest,
+  sendEmail,
   TGenericResponse,
 } from "@/utils";
 const { JWT_SECRET } = process.env;
@@ -48,7 +49,7 @@ export const register = async (
       });
     }
 
-    const encryptedPassword = await bcrypt.hash(password, 10);
+    const encryptedPassword = await bun.password.hash(password, "bcrypt");
 
     const user = await prisma.users.create({
       data: {
@@ -71,6 +72,8 @@ export const register = async (
 
     const otp = await generateOTP(user.id);
 
+    // send otp
+    await sendEmail(otp.otp_code, user.email);
     res.status(201).json({
       message: `User created successfully, Please verify your account first with OTP code ${otp.otp_code}`,
     });
@@ -102,13 +105,17 @@ export const login = async (
       });
     }
 
-    const decryptedPassword = await bcrypt.compare(password, user.password);
+    const decryptedPassword = await bun.password.verify(
+      password,
+      user.password,
+      "bcrypt"
+    );
 
     const token = jwt.sign(
       { sub: user.id, name: user.name },
       JWT_SECRET as string,
       {
-        expiresIn: "15m",
+        expiresIn: "30m",
       }
     );
 
@@ -234,6 +241,8 @@ export const resendOtp = async (
     }
 
     const otp = await generateOTP(user.id);
+
+    await sendEmail(otp.otp_code, user.email);
 
     res.status(200).json({
       message: `OTP code ${otp.otp_code}`,

@@ -7,9 +7,11 @@ import {
   zodErrorHandler,
 } from "@/middlewares";
 import morgan from "morgan";
+import cors from "cors";
 
 const { PORT } = process.env;
 const app: Express = express();
+app.use(cors());
 
 app.use(express.json());
 app.use(morgan("dev"));

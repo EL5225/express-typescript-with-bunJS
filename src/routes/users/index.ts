@@ -1,8 +1,10 @@
-import { getUsers } from "@/controllers";
+import { deleteUser, getUsers } from "@/controllers";
+import { authenticate } from "@/middlewares";
 import { Router } from "express";
 
 const users = Router();
 
-users.use("/", getUsers);
+users.get("/", getUsers);
+users.delete("/:id", authenticate, deleteUser);
 
 export default users;
